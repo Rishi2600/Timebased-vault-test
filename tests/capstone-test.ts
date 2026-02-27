@@ -35,19 +35,41 @@ describe("escrow-time-locked-vault", () => {
     console.log("  Person B (receiver):    ", receiver.publicKey.toString());
     console.log("  Person C (unauthorized):", unauthorized.publicKey.toString());
 
-    // Airdrop to receiver so they can pay tx fees
-    const receiverSig = await provider.connection.requestAirdrop(
-      receiver.publicKey,
-      0.5 * anchor.web3.LAMPORTS_PER_SOL
-    );
-    await provider.connection.confirmTransaction(receiverSig);
+    // // Airdrop to receiver so they can pay tx fees
+    // const receiverSig = await provider.connection.requestAirdrop(
+    //   receiver.publicKey,
+    //   0.5 * anchor.web3.LAMPORTS_PER_SOL
+    // );
+    // await provider.connection.confirmTransaction(receiverSig);
 
-    // Airdrop to unauthorized
-    const unauthorizedSig = await provider.connection.requestAirdrop(
-      unauthorized.publicKey,
-      0.5 * anchor.web3.LAMPORTS_PER_SOL
+    // // Airdrop to unauthorized
+    // const unauthorizedSig = await provider.connection.requestAirdrop(
+    //   unauthorized.publicKey,
+    //   0.5 * anchor.web3.LAMPORTS_PER_SOL
+    // );
+    // await provider.connection.confirmTransaction(unauthorizedSig);
+
+    // Transfer from owner to receiver instead of airdropping
+    await provider.sendAndConfirm(
+      new anchor.web3.Transaction().add(
+        anchor.web3.SystemProgram.transfer({
+          fromPubkey: owner.publicKey,
+          toPubkey: receiver.publicKey,
+          lamports: 0.1 * anchor.web3.LAMPORTS_PER_SOL,
+        })
+      )
     );
-    await provider.connection.confirmTransaction(unauthorizedSig);
+
+    // Transfer from owner to unauthorized
+    await provider.sendAndConfirm(
+      new anchor.web3.Transaction().add(
+        anchor.web3.SystemProgram.transfer({
+          fromPubkey: owner.publicKey,
+          toPubkey: unauthorized.publicKey,
+          lamports: 0.1 * anchor.web3.LAMPORTS_PER_SOL,
+        })
+      )
+    );
 
     console.log("  ✅ Receiver and unauthorized wallets funded\n");
   });
