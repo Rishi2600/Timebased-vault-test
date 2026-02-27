@@ -130,8 +130,8 @@ describe("escrow-time-locked-vault", () => {
         .rpc();
       expect.fail("Should have been rejected!");
     } catch (err: any) {
-      console.log("  ✅ Correctly rejected:", err.errorMessage);
-      expect(err.errorMessage).to.include("Receiver cannot be the same as owner");
+      console.log("  ✅ Correctly rejected:", err.message);
+      expect(err.message).to.include("Receiver cannot be the same as owner");
     }
   });
 
@@ -172,8 +172,8 @@ describe("escrow-time-locked-vault", () => {
         .rpc();
       expect.fail("Should have been blocked!");
     } catch (err: any) {
-      console.log("  ✅ Correctly blocked early withdrawal:", err.errorMessage);
-      expect(err.errorMessage).to.include("vault is still locked");
+      console.log("  ✅ Correctly blocked early withdrawal:", err.message);
+      expect(err.message).to.include("vault is still locked");
     }
   });
 
@@ -191,8 +191,8 @@ describe("escrow-time-locked-vault", () => {
         .rpc();
       expect.fail("Should have been blocked!");
     } catch (err: any) {
-      console.log("  ✅ Correctly blocked owner withdrawal:", err.errorMessage);
-      expect(err.errorMessage).to.include("designated receiver");
+      console.log("  ✅ Correctly blocked owner withdrawal:", err.message);
+      expect(err.message).to.include("designated receiver");
     }
   });
 
@@ -211,8 +211,8 @@ describe("escrow-time-locked-vault", () => {
         .rpc();
       expect.fail("Should have been blocked!");
     } catch (err: any) {
-      console.log("  ✅ Correctly blocked unauthorized withdrawal:", err.errorMessage);
-      expect(err.errorMessage).to.include("designated receiver");
+      console.log("  ✅ Correctly blocked unauthorized withdrawal:", err.message);
+      expect(err.message).to.include("designated receiver");
     }
   });
 
@@ -264,8 +264,8 @@ describe("escrow-time-locked-vault", () => {
         .rpc();
       expect.fail("Should have failed!");
     } catch (err: any) {
-      console.log("  ✅ Correctly rejected empty vault:", err.errorMessage);
-      expect(err.errorMessage).to.include("no funds");
+      console.log("  ✅ Correctly rejected empty vault:", err.message);
+      expect(err.message).to.include("no funds");
     }
   });
 
