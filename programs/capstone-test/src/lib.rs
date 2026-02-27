@@ -209,16 +209,20 @@ pub struct Withdraw<'info> {
     #[account(mut)]
     pub receiver: Signer<'info>,
 
+    /// CHECK: Used for PDA derivation only
+    pub owner: AccountInfo<'info>,
+
     #[account(
         mut,
-        seeds  = [b"vault_state", vault_state.owner.as_ref()],
+        seeds  = [b"vault_state", owner.key().as_ref()],
         bump   = vault_state.bump,
+        has_one = owner,  // verifies stored owner matches passed owner
     )]
     pub vault_state: Account<'info, VaultState>,
 
     #[account(
         mut,
-        seeds  = [b"vault", vault_state.owner.as_ref()],
+        seeds  = [b"vault", owner.key().as_ref()],
         bump   = vault_state.vault_bump,
     )]
     pub vault: SystemAccount<'info>,

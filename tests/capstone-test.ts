@@ -104,13 +104,24 @@ describe("escrow-time-locked-vault", () => {
   // ─────────────────────────────────────────────
   it("Fails if owner tries to set themselves as receiver", async () => {
     // Use a fresh keypair as owner for this test to avoid PDA conflict
-    const tempOwner = anchor.web3.Keypair.generate();
-    const sig = await provider.connection.requestAirdrop(
-      tempOwner.publicKey,
-      anchor.web3.LAMPORTS_PER_SOL
-    );
-    await provider.connection.confirmTransaction(sig);
+    // const tempOwner = anchor.web3.Keypair.generate();
+    // const sig = await provider.connection.requestAirdrop(
+    //   tempOwner.publicKey,
+    //   anchor.web3.LAMPORTS_PER_SOL
+    // );
+    // await provider.connection.confirmTransaction(sig);
 
+    const tempOwner = anchor.web3.Keypair.generate();
+    
+    await provider.sendAndConfirm(
+      new anchor.web3.Transaction().add(
+        anchor.web3.SystemProgram.transfer({
+          fromPubkey: owner.publicKey,
+          toPubkey: tempOwner.publicKey,
+          lamports: 0.1 * anchor.web3.LAMPORTS_PER_SOL,
+        })
+      )
+    );
     try {
       await program.methods
         .initialize(new anchor.BN(5), tempOwner.publicKey)
@@ -119,8 +130,8 @@ describe("escrow-time-locked-vault", () => {
         .rpc();
       expect.fail("Should have been rejected!");
     } catch (err: any) {
-      console.log("  ✅ Correctly rejected:", err.error?.errorMessage);
-      expect(err.error.errorMessage).to.include("Receiver cannot be the same as owner");
+      console.log("  ✅ Correctly rejected:", err.errorMessage);
+      expect(err.errorMessage).to.include("Receiver cannot be the same as owner");
     }
   });
 
@@ -160,8 +171,8 @@ describe("escrow-time-locked-vault", () => {
         .rpc();
       expect.fail("Should have been blocked!");
     } catch (err: any) {
-      console.log("  ✅ Correctly blocked early withdrawal:", err.error?.errorMessage);
-      expect(err.error.errorMessage).to.include("vault is still locked");
+      console.log("  ✅ Correctly blocked early withdrawal:", err.errorMessage);
+      expect(err.errorMessage).to.include("vault is still locked");
     }
   });
 
@@ -178,8 +189,8 @@ describe("escrow-time-locked-vault", () => {
         .rpc();
       expect.fail("Should have been blocked!");
     } catch (err: any) {
-      console.log("  ✅ Correctly blocked owner withdrawal:", err.error?.errorMessage);
-      expect(err.error.errorMessage).to.include("designated receiver");
+      console.log("  ✅ Correctly blocked owner withdrawal:", err.errorMessage);
+      expect(err.errorMessage).to.include("designated receiver");
     }
   });
 
@@ -197,8 +208,8 @@ describe("escrow-time-locked-vault", () => {
         .rpc();
       expect.fail("Should have been blocked!");
     } catch (err: any) {
-      console.log("  ✅ Correctly blocked unauthorized withdrawal:", err.error?.errorMessage);
-      expect(err.error.errorMessage).to.include("designated receiver");
+      console.log("  ✅ Correctly blocked unauthorized withdrawal:", err.errorMessage);
+      expect(err.errorMessage).to.include("designated receiver");
     }
   });
 
@@ -248,8 +259,8 @@ describe("escrow-time-locked-vault", () => {
         .rpc();
       expect.fail("Should have failed!");
     } catch (err: any) {
-      console.log("  ✅ Correctly rejected empty vault:", err.error?.errorMessage);
-      expect(err.error.errorMessage).to.include("no funds");
+      console.log("  ✅ Correctly rejected empty vault:", err.errorMessage);
+      expect(err.errorMessage).to.include("no funds");
     }
   });
 
