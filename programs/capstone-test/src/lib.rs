@@ -57,30 +57,59 @@ pub mod capstone_test {
     }
 
     /// Person B withdraws SOL — only after lock expires
+    // pub fn withdraw(ctx: Context<Withdraw>) -> Result<()> {
+    //     let current_time = Clock::get()?.unix_timestamp;
+    //     let vault_state  = &ctx.accounts.vault_state;
+
+    //     Only designated receiver can withdraw
+    //     require!(
+    //         ctx.accounts.receiver.key() == vault_state.receiver,
+    //         VaultError::UnauthorizedReceiver
+    //     );
+
+    //     // Escrow must not be cancelled
+    //     require!(!vault_state.is_cancelled, VaultError::EscrowCancelled);
+
+    //     // Time lock constraint
+    //     require!(
+    //         current_time >= vault_state.lock_until,
+    //         VaultError::VaultStillLocked
+    //     );
+
+    //     let vault_balance = ctx.accounts.vault.lamports();
+    //     require!(vault_balance > 0, VaultError::VaultEmpty);
+
+    //     let owner_key = vault_state.owner;
+    //     let seeds     = &[b"vault".as_ref(), owner_key.as_ref(), &[vault_state.vault_bump]];
+    //     let signer    = &[&seeds[..]];
+
+    //     system_program::transfer(
+    //         CpiContext::new_with_signer(
+    //             ctx.accounts.system_program.to_account_info(),
+    //             system_program::Transfer {
+    //                 from: ctx.accounts.vault.to_account_info(),
+    //                 to:   ctx.accounts.receiver.to_account_info(),
+    //             },
+    //             signer,
+    //         ),
+    //         vault_balance,
+    //     )?;
+
+    //     msg!(
+    //         "Person B ({}) withdrew {} lamports after lock expired",
+    //         ctx.accounts.receiver.key(),
+    //         vault_balance
+    //     );
+
+    //     Ok(())
+    // }
+
     pub fn withdraw(ctx: Context<Withdraw>) -> Result<()> {
-        let current_time = Clock::get()?.unix_timestamp;
-        let vault_state  = &ctx.accounts.vault_state;
-
-        // Only designated receiver can withdraw
-        require!(
-            ctx.accounts.receiver.key() == vault_state.receiver,
-            VaultError::UnauthorizedReceiver
-        );
-
-        // Escrow must not be cancelled
-        require!(!vault_state.is_cancelled, VaultError::EscrowCancelled);
-
-        // Time lock constraint
-        require!(
-            current_time >= vault_state.lock_until,
-            VaultError::VaultStillLocked
-        );
-
         let vault_balance = ctx.accounts.vault.lamports();
         require!(vault_balance > 0, VaultError::VaultEmpty);
 
-        let owner_key = vault_state.owner;
-        let seeds     = &[b"vault".as_ref(), owner_key.as_ref(), &[vault_state.vault_bump]];
+        let owner_key = ctx.accounts.vault_state.owner;
+        let seeds     = &[b"vault".as_ref(), owner_key.as_ref(), &[ctx.accounts.vault_state.vault_bump]];
         let signer    = &[&seeds[..]];
 
         system_program::transfer(
@@ -95,12 +124,7 @@ pub mod capstone_test {
             vault_balance,
         )?;
 
-        msg!(
-            "Person B ({}) withdrew {} lamports after lock expired",
-            ctx.accounts.receiver.key(),
-            vault_balance
-        );
-
+        msg!("Receiver {} withdrew {} lamports", ctx.accounts.receiver.key(), vault_balance);
         Ok(())
     }
 
@@ -209,20 +233,17 @@ pub struct Withdraw<'info> {
     #[account(mut)]
     pub receiver: Signer<'info>,
 
-    /// CHECK: Used for PDA derivation only
-    pub owner: AccountInfo<'info>,
-
     #[account(
         mut,
-        seeds  = [b"vault_state", owner.key().as_ref()],
-        bump   = vault_state.bump,
-        has_one = owner,  // verifies stored owner matches passed owner
+        constraint = vault_state.receiver == receiver.key() @ VaultError::UnauthorizedReceiver,
+        constraint = !vault_state.is_cancelled @ VaultError::EscrowCancelled,
+        constraint = Clock::get().unwrap().unix_timestamp >= vault_state.lock_until @ VaultError::VaultStillLocked,
     )]
     pub vault_state: Account<'info, VaultState>,
 
     #[account(
         mut,
-        seeds  = [b"vault", owner.key().as_ref()],
+        seeds  = [b"vault", vault_state.owner.as_ref()],
         bump   = vault_state.vault_bump,
     )]
     pub vault: SystemAccount<'info>,

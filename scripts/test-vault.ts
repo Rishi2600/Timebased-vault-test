@@ -95,6 +95,7 @@ const main = async () => {
       .withdraw()
       .accounts({
         receiver: receiver.publicKey,
+        vaultState: vaultStatePDA,
       })
       .signers([receiver])
       .rpc();
@@ -114,6 +115,7 @@ const main = async () => {
       .withdraw()
       .accounts({
         receiver: owner.publicKey,
+        vaultState: vaultStatePDA,
       })
       .rpc();
     console.log("❌ This should not have worked!");
@@ -145,6 +147,7 @@ const main = async () => {
     .withdraw()
     .accounts({
       receiver: receiver.publicKey,
+      vaultState: vaultStatePDA,
     })
     .signers([receiver])
     .rpc();

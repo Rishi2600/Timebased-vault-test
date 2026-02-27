@@ -166,6 +166,7 @@ describe("escrow-time-locked-vault", () => {
         .withdraw()
         .accounts({
           receiver: receiver.publicKey,
+          vaultState: vaultStatePDA,
         })
         .signers([receiver])
         .rpc();
@@ -185,6 +186,7 @@ describe("escrow-time-locked-vault", () => {
         .withdraw()
         .accounts({
           receiver: owner.publicKey,
+          vaultState: vaultStatePDA,
         })
         .rpc();
       expect.fail("Should have been blocked!");
@@ -203,6 +205,7 @@ describe("escrow-time-locked-vault", () => {
         .withdraw()
         .accounts({
           receiver: unauthorized.publicKey,
+          vaultState: vaultStatePDA,
         })
         .signers([unauthorized])
         .rpc();
@@ -227,6 +230,7 @@ describe("escrow-time-locked-vault", () => {
       .withdraw()
       .accounts({
         receiver: receiver.publicKey,
+        vaultState: vaultStatePDA,
       })
       .signers([receiver])
       .rpc();
@@ -254,6 +258,7 @@ describe("escrow-time-locked-vault", () => {
         .withdraw()
         .accounts({
           receiver: receiver.publicKey,
+          vaultState: vaultStatePDA,
         })
         .signers([receiver])
         .rpc();
