@@ -44,12 +44,16 @@ const main = async () => {
   // ─────────────────────────────────────────────
   console.log("\n────────────────────────────────────────");
   console.log("STEP 1: Funding Person B for tx fees...");
-  const airdropSig = await provider.connection.requestAirdrop(
-    receiver.publicKey,
-    0.1 * anchor.web3.LAMPORTS_PER_SOL
-  );
-  await provider.connection.confirmTransaction(airdropSig);
-  console.log("✅ Person B funded with 0.1 SOL for fees");
+    await provider.sendAndConfirm(
+      new anchor.web3.Transaction().add(
+        anchor.web3.SystemProgram.transfer({
+          fromPubkey: owner.publicKey,
+          toPubkey: receiver.publicKey,
+          lamports: 0.1 * anchor.web3.LAMPORTS_PER_SOL,
+        })
+      )
+    );
+    console.log("✅ Person B funded with 0.1 SOL for fees");
 
   // ─────────────────────────────────────────────
   // STEP 2: Initialize escrow vault
