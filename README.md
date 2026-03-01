@@ -285,7 +285,7 @@ anchor test --skip-local-validator --skip-deploy
 # ANCHOR_PROVIDER_URL=https://api.devnet.solana.com
 # ANCHOR_WALLET=/path/to/your/wallet.json
 
-npx ts-node scripts/use-vault.ts
+npx ts-node scripts/test-vault.ts
 ```
 
 ---
