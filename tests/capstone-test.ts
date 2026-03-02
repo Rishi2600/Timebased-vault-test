@@ -30,7 +30,7 @@ describe("escrow-time-locked-vault", () => {
 
   // Fund receiver and unauthorized wallets before tests
   before(async () => {
-    console.log("\n  📋 Test Setup:");
+    console.log("\n   Test Setup:");
     console.log("  Person A (owner):       ", owner.publicKey.toString());
     console.log("  Person B (receiver):    ", receiver.publicKey.toString());
     console.log("  Person C (unauthorized):", unauthorized.publicKey.toString());
@@ -71,7 +71,7 @@ describe("escrow-time-locked-vault", () => {
       )
     );
 
-    console.log("  ✅ Receiver and unauthorized wallets funded\n");
+    console.log("   Receiver and unauthorized wallets funded\n");
   });
 
   // ─────────────────────────────────────────────
@@ -130,7 +130,7 @@ describe("escrow-time-locked-vault", () => {
         .rpc();
       expect.fail("Should have been rejected!");
     } catch (err: any) {
-      console.log("  ✅ Correctly rejected:", err.message);
+      console.log("   Correctly rejected:", err.message);
       expect(err.message).to.include("Receiver cannot be the same as owner");
     }
   });
@@ -172,7 +172,7 @@ describe("escrow-time-locked-vault", () => {
         .rpc();
       expect.fail("Should have been blocked!");
     } catch (err: any) {
-      console.log("  ✅ Correctly blocked early withdrawal:", err.message);
+      console.log("   Correctly blocked early withdrawal:", err.message);
       expect(err.message).to.include("vault is still locked");
     }
   });
@@ -191,7 +191,7 @@ describe("escrow-time-locked-vault", () => {
         .rpc();
       expect.fail("Should have been blocked!");
     } catch (err: any) {
-      console.log("  ✅ Correctly blocked owner withdrawal:", err.message);
+      console.log("   Correctly blocked owner withdrawal:", err.message);
       expect(err.message).to.include("designated receiver");
     }
   });
@@ -211,7 +211,7 @@ describe("escrow-time-locked-vault", () => {
         .rpc();
       expect.fail("Should have been blocked!");
     } catch (err: any) {
-      console.log("  ✅ Correctly blocked unauthorized withdrawal:", err.message);
+      console.log("   Correctly blocked unauthorized withdrawal:", err.message);
       expect(err.message).to.include("designated receiver");
     }
   });
@@ -220,7 +220,7 @@ describe("escrow-time-locked-vault", () => {
   // TEST 7: Person B withdraws after lock expires
   // ─────────────────────────────────────────────
   it("Person B withdraws successfully after lock expires", async () => {
-    console.log("  ⏳ Waiting 6 seconds for lock to expire...");
+    console.log("   Waiting 6 seconds for lock to expire...");
     await new Promise((resolve) => setTimeout(resolve, 6000));
 
     const receiverBalanceBefore = await provider.connection.getBalance(receiver.publicKey);
@@ -264,7 +264,7 @@ describe("escrow-time-locked-vault", () => {
         .rpc();
       expect.fail("Should have failed!");
     } catch (err: any) {
-      console.log("  ✅ Correctly rejected empty vault:", err.message);
+      console.log("   Correctly rejected empty vault:", err.message);
       expect(err.message).to.include("no funds");
     }
   });
@@ -295,7 +295,7 @@ describe("escrow-time-locked-vault", () => {
       await program.account.vaultState.fetch(vaultStatePDA);
       expect.fail("Account should be closed!");
     } catch {
-      console.log("  ✅ VaultState account successfully closed");
+      console.log("   VaultState account successfully closed");
     }
   });
 });

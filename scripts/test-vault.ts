@@ -20,7 +20,7 @@ const main = async () => {
   const receiver = anchor.web3.Keypair.generate();
 
   console.log("\n════════════════════════════════════════");
-  console.log("   ⏰ Escrow Time-Locked Vault Demo");
+  console.log("    Escrow Time-Locked Vault Demo");
   console.log("════════════════════════════════════════");
   console.log("Person A (owner):   ", owner.publicKey.toString());
   console.log("Person B (receiver):", receiver.publicKey.toString());
@@ -53,7 +53,7 @@ const main = async () => {
         })
       )
     );
-    console.log("✅ Person B funded with 0.1 SOL for fees");
+    console.log(" Person B funded with 0.1 SOL for fees");
 
   // ─────────────────────────────────────────────
   // STEP 2: Initialize escrow vault
@@ -71,7 +71,7 @@ const main = async () => {
 
   const stateAfterInit = await program.account.vaultState.fetch(vaultStatePDA);
   const unlockTime = new Date(stateAfterInit.lockUntil.toNumber() * 1000);
-  console.log("✅ Vault initialized!");
+  console.log(" Vault initialized!");
   console.log("   Unlocks at:", unlockTime.toLocaleString());
 
   // ─────────────────────────────────────────────
@@ -86,7 +86,7 @@ const main = async () => {
     .rpc();
 
   const vaultBalance = await provider.connection.getBalance(vaultPDA);
-  console.log("✅ Deposited! Vault balance:", vaultBalance / anchor.web3.LAMPORTS_PER_SOL, "SOL");
+  console.log(" Deposited! Vault balance:", vaultBalance / anchor.web3.LAMPORTS_PER_SOL, "SOL");
 
   // ─────────────────────────────────────────────
   // STEP 4: Person B tries to withdraw early (will fail)
@@ -103,9 +103,9 @@ const main = async () => {
       })
       .signers([receiver])
       .rpc();
-    console.log("❌ This should not have worked!");
+    console.log(" This should not have worked!");
   } catch (err: any) {
-    console.log("✅ Correctly blocked! Reason:", err.error?.errorMessage);
+    console.log(" Correctly blocked! Reason:", err.error?.errorMessage);
   }
 
   // ─────────────────────────────────────────────
@@ -122,9 +122,9 @@ const main = async () => {
         vaultState: vaultStatePDA,
       })
       .rpc();
-    console.log("❌ This should not have worked!");
+    console.log(" This should not have worked!");
   } catch (err: any) {
-    console.log("✅ Correctly blocked! Reason:", err.error?.errorMessage);
+    console.log(" Correctly blocked! Reason:", err.error?.errorMessage);
   }
 
   // ─────────────────────────────────────────────
@@ -134,10 +134,10 @@ const main = async () => {
   console.log("STEP 6: Waiting 16 seconds for lock to expire...");
 
   for (let i = 16; i > 0; i--) {
-    process.stdout.write(`\r   ⏳ ${i} seconds remaining...`);
+    process.stdout.write(`\r    ${i} seconds remaining...`);
     await sleep(1000);
   }
-  console.log("\n✅ Lock has expired!");
+  console.log("\n Lock has expired!");
 
   // ─────────────────────────────────────────────
   // STEP 7: Person B successfully withdraws
@@ -159,7 +159,7 @@ const main = async () => {
   const receiverBalanceAfter = await provider.connection.getBalance(receiver.publicKey);
   const vaultBalanceAfter    = await provider.connection.getBalance(vaultPDA);
 
-  console.log("✅ Person B successfully withdrew!");
+  console.log(" Person B successfully withdrew!");
   console.log("   Vault balance now:", vaultBalanceAfter, "lamports");
   console.log(
     "   Person B received:",
@@ -181,7 +181,7 @@ const main = async () => {
     .rpc();
 
   const ownerBalanceAfter = await provider.connection.getBalance(owner.publicKey);
-  console.log("✅ Vault closed!");
+  console.log(" Vault closed!");
   console.log(
     "   Rent recovered:",
     (ownerBalanceAfter - ownerBalanceBefore) / anchor.web3.LAMPORTS_PER_SOL,
@@ -189,7 +189,7 @@ const main = async () => {
   );
 
   console.log("\n════════════════════════════════════════");
-  console.log("   ✅ Escrow Demo Complete!");
+  console.log("    Escrow Demo Complete!");
   console.log("════════════════════════════════════════\n");
 };
 
