@@ -126,7 +126,7 @@ capstone-test/
 ├── tests/
 │   └── capstone-test.ts            <- Full test suite (TypeScript)
 ├── scripts/
-│   └── use-vault.ts                <- Real usage demo script
+│   └── test-vault.ts                <- Real usage demo script
 ├── Anchor.toml                     <- Anchor config
 ├── Cargo.toml                      <- Rust dependencies
 └── package.json                    <- Node dependencies
